@@ -81,7 +81,20 @@ return {
       require("mason").setup()
       require("mason-lspconfig").setup()
 
-      local capabilities = require("blink.cmp").get_lsp_capabilities()
+      local blink_capabilities = require("blink.cmp").get_lsp_capabilities()
+      -- Ensure formatting is enabled in capabilities
+      -- Merge with default LSP capabilities to ensure formatting is available
+      local capabilities = vim.tbl_deep_extend("force", 
+        vim.lsp.protocol.make_client_capabilities(),
+        blink_capabilities
+      )
+      -- Explicitly enable formatting capabilities
+      if not capabilities.textDocument then
+        capabilities.textDocument = {}
+      end
+      if not capabilities.textDocument.formatting then
+        capabilities.textDocument.formatting = { dynamicRegistration = true }
+      end
 
       -- Diagnostic config
       vim.diagnostic.config({
@@ -116,7 +129,34 @@ return {
           map("n", "K", vim.lsp.buf.hover, "Hover")
           map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
           map("n", "<leader>cr", vim.lsp.buf.rename, "Rename")
-          map("n", "<leader>cf", function() vim.lsp.buf.format({ async = true }) end, "Format")
+          map("n", "<leader>cf", function()
+            -- Try conform.nvim first (supports both LSP and external formatters)
+            local conform_ok, conform = pcall(require, "conform")
+            if conform_ok then
+              conform.format({ async = true, lsp_fallback = true })
+            else
+              -- Fallback to LSP formatting if conform not available
+              local formatting_clients = {}
+              for _, client in ipairs(vim.lsp.get_clients({ bufnr = buf })) do
+                local caps = client.server_capabilities or {}
+                if caps.documentFormattingProvider or caps.documentRangeFormattingProvider then
+                  table.insert(formatting_clients, client)
+                end
+              end
+              
+              if #formatting_clients > 0 then
+                vim.lsp.buf.format({
+                  async = true,
+                  filter = function(client)
+                    local caps = client.server_capabilities or {}
+                    return caps.documentFormattingProvider or caps.documentRangeFormattingProvider
+                  end,
+                })
+              else
+                vim.notify("[LSP] No formatter available. Install conform.nvim for external formatters.", vim.log.levels.WARN)
+              end
+            end
+          end, "Format")
           map("n", "<leader>cs", vim.lsp.buf.signature_help, "Signature help")
         end,
       })
