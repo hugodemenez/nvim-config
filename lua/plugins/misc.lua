@@ -92,8 +92,8 @@ return {
     opts = {
       code = {
         sign = false,
-        style = "normal", -- Preserves treesitter syntax highlighting
       },
+      restart_highlighter = true,
     },
   },
 
