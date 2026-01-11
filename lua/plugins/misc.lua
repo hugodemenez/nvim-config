@@ -15,10 +15,12 @@ return {
   -- Treesitter for syntax highlighting
   {
     "nvim-treesitter/nvim-treesitter",
+    lazy = false, -- nvim-treesitter does not support lazy loading
     build = ":TSUpdate",
-    event = { "BufReadPost", "BufNewFile" },
-    opts = {
-      ensure_installed = {
+    config = function()
+      require("nvim-treesitter").setup({})
+      -- Install parsers (async, runs in background)
+      require("nvim-treesitter").install({
         "lua", "vim", "vimdoc", "query",
         "javascript", "typescript", "tsx",
         "html", "css", "json", "yaml", "toml",
@@ -26,11 +28,8 @@ return {
         "bash", "markdown", "markdown_inline",
         "gitcommit", "gitignore", "diff",
         "regex", "dockerfile", "sql",
-      },
-      auto_install = true,
-      highlight = { enable = true },
-      indent = { enable = true },
-    },
+      })
+    end,
   },
 
   -- Autopairs
