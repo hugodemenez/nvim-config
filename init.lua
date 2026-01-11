@@ -98,6 +98,29 @@ map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 map("n", "[d", function() vim.diagnostic.jump({ count = -1 }) end, { desc = "Previous diagnostic" })
 map("n", "]d", function() vim.diagnostic.jump({ count = 1 }) end, { desc = "Next diagnostic" })
 map("n", "<leader>d", vim.diagnostic.open_float, { desc = "Line diagnostics" })
+map("n", "<leader>dy", function()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local cursor_line = vim.api.nvim_win_get_cursor(0)[1] - 1  -- 0-based
+  local all_diagnostics = vim.diagnostic.get(bufnr)
+  
+  -- Find diagnostics at the current line
+  local line_diagnostics = {}
+  for _, diag in ipairs(all_diagnostics) do
+    if diag.lnum == cursor_line then
+      table.insert(line_diagnostics, diag)
+    end
+  end
+  
+  if #line_diagnostics > 0 then
+    local message = line_diagnostics[1].message
+    -- Set both default and system clipboard registers
+    vim.fn.setreg('"', message)
+    vim.fn.setreg('+', message)
+    vim.notify('Yanked: ' .. message, vim.log.levels.INFO)
+  else
+    vim.notify('No diagnostic at cursor', vim.log.levels.WARN)
+  end
+end, { desc = "Yank diagnostic message" })
 
 -- Highlight on yank
 vim.api.nvim_create_autocmd("TextYankPost", {
