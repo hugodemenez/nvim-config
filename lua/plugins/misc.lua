@@ -101,4 +101,26 @@ return {
     "github/copilot.vim",
     event = "InsertEnter",
   },
+
+  -- Hide/mask sensitive values in .env files
+  {
+    "laytan/cloak.nvim",
+    config = function()
+      require("cloak").setup({
+        enabled = true,
+        cloak_character = "*",
+        highlight_group = "Comment",
+        patterns = {
+          {
+            file_pattern = {
+              ".env*",
+              "*.env",
+              "*.env.local",
+            },
+            cloak_pattern = "=.+",
+          },
+        },
+      })
+    end,
+  },
 }
