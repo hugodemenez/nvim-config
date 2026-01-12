@@ -100,6 +100,7 @@ return {
   {
     "github/copilot.vim",
     event = "InsertEnter",
+    -- Tab will accept Copilot suggestions (default behavior)
   },
 
   -- Hide/mask sensitive values in .env files

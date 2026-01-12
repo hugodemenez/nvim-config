@@ -10,6 +10,8 @@ return {
     opts = {
       keymap = {
         preset = "default",
+        ["<Up>"] = { "select_prev", "fallback" },
+        ["<Down>"] = { "select_next", "fallback" },
         ["<C-k>"] = { "select_prev", "fallback" },
         ["<C-j>"] = { "select_next", "fallback" },
         ["<C-b>"] = { "scroll_documentation_up", "fallback" },
@@ -17,8 +19,8 @@ return {
         ["<C-Space>"] = { "show", "fallback" },
         ["<C-e>"] = { "hide", "fallback" },
         ["<CR>"] = { "accept", "fallback" },
-        ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
-        ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
+        -- Tab removed from LSP completion to allow Copilot to use it
+        -- Arrow keys and Ctrl+j/k can be used for navigation
       },
       appearance = {
         nerd_font_variant = "mono",
