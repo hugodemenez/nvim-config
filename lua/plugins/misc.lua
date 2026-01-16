@@ -50,8 +50,8 @@ return {
   {
     "numToStr/Comment.nvim",
     keys = {
-      { "gcc", mode = "n", desc = "Comment line" },
-      { "gc", mode = { "n", "v" }, desc = "Comment" },
+      { "gcc", mode = "n",          desc = "Comment line" },
+      { "gc",  mode = { "n", "v" }, desc = "Comment" },
     },
     opts = {},
   },
@@ -82,19 +82,6 @@ return {
 
   -- Wakatime (optional - remove if not needed)
   { "wakatime/vim-wakatime", event = "VeryLazy" },
-
-  -- Markdown rendering in buffer
-  {
-    "MeanderingProgrammer/render-markdown.nvim",
-    ft = { "markdown" },
-    dependencies = { "nvim-treesitter/nvim-treesitter" },
-    opts = {
-      code = {
-        sign = false,
-      },
-      restart_highlighter = true,
-    },
-  },
 
   -- Copilot
   {
